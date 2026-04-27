@@ -1,6 +1,10 @@
+import dynamic from "next/dynamic";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import ScrollScene from "@/components/ScrollScene";
+
+const ScrollScene = dynamic(() => import("@/components/ScrollScene"), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
