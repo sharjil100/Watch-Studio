@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useScroll } from "framer-motion";
 import Hero from "./Hero";
 import ModelsSection, { type Product } from "./ModelsSection";
 import ScrollWatch from "./ScrollWatch";
+import DialModal from "./DialModal";
 
 const PRODUCTS: Product[] = [
   { id: "origin",   name: "Aurum Origin",            price: "$2,199.00", image: "/hero-watch.png" },
@@ -17,6 +18,13 @@ const PRODUCTS: Product[] = [
 export default function ScrollScene() {
   const ref = useRef<HTMLDivElement>(null);
   const [selectedId, setSelectedId] = useState<string>(PRODUCTS[0].id);
+  const [dialOpen, setDialOpen] = useState(false);
+
+  // Lazy init reads window immediately — safe because this component has ssr:false
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 1024
+  );
+
   const selected = PRODUCTS.find((p) => p.id === selectedId) ?? PRODUCTS[0];
 
   const { scrollYProgress } = useScroll({
@@ -24,16 +32,38 @@ export default function ScrollScene() {
     offset: ["start start", "end end"],
   });
 
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   return (
-    <div ref={ref} className="relative">
-      <ScrollWatch progress={scrollYProgress} imageSrc={selected.image} />
-      <Hero />
-      <ModelsSection
-        progress={scrollYProgress}
-        products={PRODUCTS}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
+    <>
+      {/* Main scroll scene (200svh) — ScrollWatch travels hero → pillow */}
+      <div ref={ref} className="relative">
+        <ScrollWatch
+          key={isMobile ? "mobile" : "desktop"}
+          progress={scrollYProgress}
+          imageSrc={selected.image}
+          isMobile={isMobile}
+          onWatchClick={() => setDialOpen(true)}
+        />
+        <Hero />
+        <ModelsSection
+          progress={scrollYProgress}
+          products={PRODUCTS}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+        />
+      </div>
+
+      {/* Dial anatomy modal — click-triggered, pops watch off pillow */}
+      <DialModal
+        open={dialOpen}
+        onClose={() => setDialOpen(false)}
+        imageSrc={selected.image}
       />
-    </div>
+    </>
   );
 }

@@ -3,10 +3,10 @@ export default function Footer() {
 
   return (
     <footer className="relative w-full bg-cream border-t border-burnt/15">
-      <div className="mx-auto max-w-7xl px-8 py-16 grid grid-cols-1 gap-12 md:grid-cols-4">
+      <div className="mx-auto max-w-7xl px-6 md:px-8 py-10 md:py-14 grid grid-cols-2 gap-8 md:grid-cols-4">
 
         {/* Brand */}
-        <div className="md:col-span-1 flex flex-col gap-4">
+        <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
           <div className="font-display text-2xl tracking-[0.25em] text-burnt">
             WATCH STUDIO
           </div>
@@ -43,7 +43,7 @@ export default function Footer() {
 
       {/* Bottom strip */}
       <div className="border-t border-burnt/10">
-        <div className="mx-auto max-w-7xl px-8 py-6 flex flex-col md:flex-row gap-4 md:gap-8 items-start md:items-center justify-between text-[11px] tracking-[0.25em] uppercase text-ink/50">
+        <div className="mx-auto max-w-7xl px-6 md:px-8 py-5 flex flex-col md:flex-row gap-3 md:gap-8 items-start md:items-center justify-between text-[11px] tracking-[0.25em] uppercase text-ink/50">
           <span>© {year} Watch Studio · Geneva</span>
           <div className="flex gap-6">
             <a href="#" className="hover:text-burnt transition">Privacy</a>

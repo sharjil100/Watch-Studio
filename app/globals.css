@@ -7,20 +7,26 @@
   --burnt: #b5471b;
   --ink: #1a140c;
 
-  /* Hero composition tokens — width AND height aware */
-  /* min(vw, vh) caps growth on ultra-wide AND prevents oversize on tall/narrow */
-  /* watch-size = visible height of two stacked Anton lines.
-     Anton renders glyphs at ~95% of em-box, so two lines visually span
-     ≈ 1.7× font-size. Tokens are scaled in the same ratio. */
-  --watch-size: clamp(680px, min(30vw, 54vh), 1100px);
+  /* Desktop — properly scales with viewport (previous clamp min was too high,
+     so the watch was always a fixed 680px regardless of screen size) */
+  --watch-size: clamp(380px, min(36vw, 60vh), 900px);
   --hero-type-size: clamp(5.5rem, min(12.5vw, 22vh), 16rem);
   --hero-type-gap: -0.05em;
 }
 
-@media (max-width: 768px) {
+/* Tablet: 768px – 1023px */
+@media (max-width: 1023px) {
   :root {
-    --watch-size: clamp(220px, 60vw, 360px);
-    --hero-type-size: clamp(3rem, 16vw, 7rem);
+    --watch-size: clamp(260px, min(44vw, 50vh), 540px);
+    --hero-type-size: clamp(3.5rem, min(11vw, 19vh), 11rem);
+  }
+}
+
+/* Mobile: < 768px */
+@media (max-width: 767px) {
+  :root {
+    --watch-size: clamp(200px, 62vw, 320px);
+    --hero-type-size: clamp(2.8rem, 17vw, 6rem);
   }
 }
 
