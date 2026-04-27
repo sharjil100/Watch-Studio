@@ -1,16 +1,12 @@
-import dynamic from "next/dynamic";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-
-const ScrollScene = dynamic(() => import("@/components/ScrollScene"), {
-  ssr: false,
-});
+import ScrollSceneClient from "@/components/ScrollSceneClient";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-cream">
       <Nav />
-      <ScrollScene />
+      <ScrollSceneClient />
       <Footer />
     </main>
   );
