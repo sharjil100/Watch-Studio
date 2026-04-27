@@ -1,0 +1,177 @@
+"use client";
+
+import Image from "next/image";
+import { useRef, type ButtonHTMLAttributes } from "react";
+import { motion, type MotionValue } from "framer-motion";
+
+export interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+}
+
+interface Props {
+  /** Kept for API compatibility — no longer used for card visibility */
+  progress?: MotionValue<number>;
+  products: Product[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}
+
+export default function ModelsSection({
+  products,
+  selectedId,
+  onSelect,
+}: Props) {
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const CARD_STEP = 220; // ~ card width + gap
+
+  const scrollByDelta = (delta: number) =>
+    carouselRef.current?.scrollBy({ left: delta, behavior: "smooth" });
+
+  return (
+    // Locked to exactly 100svh so the scroll math (ScrollScene = 200vh total) holds.
+    <section className="relative w-full h-[100svh] bg-cream overflow-hidden">
+      <div className="absolute inset-0 grid grid-cols-1 lg:grid-cols-2">
+
+        {/* ── Left: Pillow (the ScrollWatch lands here; selected watch swaps on top) ── */}
+        <div className="relative h-full">
+          <div
+            className="absolute left-1/2 top-[54%] -translate-x-1/2 -translate-y-1/2"
+            style={{ width: "calc(var(--watch-size) * 1.6)" }}
+          >
+            <div className="relative aspect-[5/4]">
+              <Image
+                src="/pillow2.png"
+                alt="Velvet display pillow"
+                fill
+                priority
+                sizes="(min-width:1024px) 50vw, 90vw"
+                className="object-contain"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right: Heading + product carousel ── */}
+        <div className="relative flex flex-col justify-center px-[6vw] py-[10vh] gap-10">
+          <p className="text-xs tracking-[0.4em] uppercase text-ink/60">
+            Our models
+          </p>
+
+          <h2
+            className="hero-type leading-[0.82]"
+            style={{ fontSize: "clamp(3.5rem, 8vw, 8rem)" }}
+          >
+            <span className="block">PURE</span>
+            <span className="block" style={{ marginTop: "-0.04em" }}>
+              BRILLIANCE
+            </span>
+          </h2>
+
+          {/* Carousel: scrollable card row + arrow controls beside it */}
+          <div className="flex items-center gap-4">
+            <div
+              ref={carouselRef}
+              className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {products.map((product, idx) => (
+                <ModelCard
+                  key={product.id}
+                  product={product}
+                  isSelected={product.id === selectedId}
+                  onClick={() => onSelect(product.id)}
+                  index={idx}
+                />
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-2 shrink-0">
+              <CarouselButton
+                onClick={() => scrollByDelta(-CARD_STEP)}
+                aria-label="Previous model"
+              >
+                ←
+              </CarouselButton>
+              <CarouselButton
+                onClick={() => scrollByDelta(CARD_STEP)}
+                aria-label="Next model"
+              >
+                →
+              </CarouselButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CarouselButton({
+  children,
+  ...rest
+}: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...rest}
+      className="w-11 h-11 rounded-full border border-burnt/40 text-burnt hover:bg-burnt hover:text-cream transition flex items-center justify-center text-base"
+    >
+      {children}
+    </button>
+  );
+}
+
+interface ModelCardProps {
+  product: Product;
+  isSelected: boolean;
+  onClick: () => void;
+  /** Position in the carousel — used only to stagger the entry animation */
+  index: number;
+}
+
+/**
+ * One-shot entry: cards fade up the first time the section enters view, then
+ * stay visible regardless of scroll direction. Clicking a card promotes it to
+ * the featured watch on the pillow via onSelect.
+ */
+function ModelCard({ product, isSelected, onClick, index }: ModelCardProps) {
+  return (
+    <motion.button
+      onClick={onClick}
+      type="button"
+      aria-label={`Select ${product.name}`}
+      aria-pressed={isSelected}
+      initial={{ opacity: 0, y: 16, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-15%" }}
+      transition={{
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1],
+        delay: index * 0.08,
+      }}
+      className="snap-start shrink-0 w-[200px] flex flex-col gap-3 text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-burnt rounded-md"
+    >
+      <div
+        className={`relative aspect-[3/4] rounded-md overflow-hidden border transition-colors ${
+          isSelected
+            ? "border-burnt"
+            : "border-burnt/20 group-hover:border-burnt/50"
+        }`}
+      >
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          sizes="200px"
+          className="object-contain p-3"
+        />
+      </div>
+      <div>
+        <p className="text-sm text-ink">{product.name}</p>
+        <p className="text-sm text-ink/60">{product.price}</p>
+      </div>
+    </motion.button>
+  );
+}
