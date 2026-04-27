@@ -31,30 +31,29 @@ export default function ScrollWatch({
     restDelta: 0.001,
   });
 
-  // Desktop: watch travels to the pillow in the left column (centered at 154vh).
-  // Mobile:  pillow occupies the top 45% of ModelsSection, so its center sits at
-  //          100svh + 50% × 45svh = 122.5svh ≈ 123vh.
+  // Phase 1 (0 → 0.30): watch holds at hero position while it straightens.
+  // Phase 2 (0.30 → 0.65): watch slides down to the pillow.
+  // Phase 3 (0.65 → 1): watch held on pillow.
   const docY = useTransform(
     smoothProgress,
-    [0, 0.4, 0.7, 1],
+    [0, 0.30, 0.65, 1],
     isMobile
-      ? ["42vh", "58vh", "123vh", "123vh"]
-      : ["44vh", "84vh", "154vh", "154vh"]
+      ? ["50vh", "50vh", "133vh", "133vh"]
+      : ["52vh", "52vh", "163vh", "163vh"]
   );
 
-  // Desktop: slide left into the two-column pillow area.
-  // Mobile:  pillow is centred in the single column — no horizontal shift.
   const x = useTransform(
     smoothProgress,
-    [0, 0.7, 1],
-    isMobile ? ["0vw", "0vw", "0vw"] : ["0vw", "-25vw", "-25vw"]
+    [0, 0.30, 0.65, 1],
+    isMobile ? ["0vw", "0vw", "0vw", "0vw"] : ["0vw", "0vw", "-25vw", "-25vw"]
   );
 
-  // Subtle tilt when the watch lands on the pillow (same on both breakpoints).
+  // Straightens the watch during phase 1 (scroll offsets the entry tilt),
+  // then holds straight so the watch settles flat on the pillow.
   const rotateOffset = useTransform(
     smoothProgress,
-    [0, 0.4, 0.7, 1],
-    [0, 0, -3, -3]
+    [0, 0.30, 0.65, 1],
+    [0, -7, -7, -7]
   );
 
   const entry = useAnimation();
@@ -62,7 +61,7 @@ export default function ScrollWatch({
     const t = setTimeout(() => {
       entry.start({
         scale: 1,
-        rotate: 3,
+        rotate: 7,
         transition: { duration: 5.5, ease: [0.22, 1, 0.36, 1] },
       });
     }, 300);
@@ -104,6 +103,7 @@ export default function ScrollWatch({
                   exit={{ x: "-40vw", opacity: 0 }}
                   transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
                   className="absolute inset-0"
+                  style={{ y: "-12%" }}
                 >
                   <WatchPlaceholder src={imageSrc} alt="Featured watch" />
                 </motion.div>
@@ -112,7 +112,11 @@ export default function ScrollWatch({
                 <WatchPlaceholder src={imageSrc} alt="" />
               </div>
             </button>
-            <div className="watch-shadow absolute left-1/2 -bottom-6 h-10 w-[70%] -translate-x-1/2 rounded-full" />
+            {/* Shadow sits below the dial, not the bracelet tip — shift up to match image offset */}
+            <div
+              className="watch-shadow absolute left-1/2 h-10 w-[70%] -translate-x-1/2 rounded-full"
+              style={{ bottom: "calc(12% - 1.5rem)" }}
+            />
           </div>
         </motion.div>
       </motion.div>

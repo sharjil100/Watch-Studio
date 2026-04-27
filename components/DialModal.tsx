@@ -57,16 +57,17 @@ export default function DialModal({ open, onClose, imageSrc = "/hero-watch.png" 
           ──────────────────────────────────────────────────────────────────── */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
-            initial={{ scale: 0.30 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.30 }}
+            initial={{ scale: 0.30, y: "-12vmin" }}
+            animate={{ scale: 1,    y: "10vmin" }}
+            exit={{ scale: 0.30,    y: "-8vmin" }}
+            style={{ transformOrigin: "50% 50%" }}
             transition={{ type: "spring", stiffness: 75, damping: 19 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Reference div — 200vmin square, same size as the watch image.
-                translateY(-18vmin) compensates for the dial being in the upper
-                55-58% of the image (bracelet hangs lower than crown protrudes). */}
-            <div className="relative" style={{ width: "200vmin", height: "200vmin", transform: "translateY(-18vmin)" }}>
+            {/* Reference div — 200vmin square; no CSS transform here.
+                Vertical offset is handled by the Framer Motion y above so
+                scale always zooms from the corrected centre. */}
+            <div className="relative" style={{ width: "200vmin", height: "200vmin" }}>
 
               {/* Pillow — scaled to cover the entire viewport so its dark velvet
                   texture forms the background; object-cover fills the container. */}
@@ -96,7 +97,7 @@ export default function DialModal({ open, onClose, imageSrc = "/hero-watch.png" 
                   alt="Watch dial close-up"
                   fill
                   priority
-                  className="object-contain"
+                  className="object-contain object-center"
                   sizes="200vmin"
                 />
               </div>

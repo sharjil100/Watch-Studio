@@ -20,8 +20,8 @@ export default function Hero() {
   return (
     <section className="relative w-full h-[100svh] min-h-[500px] bg-cream overflow-hidden">
 
-      {/* Main hero type — centered in upper ~80% to leave room for bottom strip */}
-      <div className="absolute inset-x-0 top-0 bottom-[20vh] flex items-center justify-center">
+      {/* Main hero type — offset from navbar, leaving room for bottom strip */}
+      <div className="absolute inset-x-0 top-[8vh] bottom-[20vh] flex items-center justify-center">
         <div className="absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 flex flex-col items-center gap-6 md:gap-8">
           <motion.h1
             aria-hidden="true"
